@@ -1,20 +1,13 @@
 import pygame
 
-import constants
+import src.constants as constants
+from src.app import App
 
 
 def main():
-    pygame.init()
-
-    screen = pygame.display.set_mode(
-        (constants.SCREEN_WIDTH, constants.SCREEN_HEIGH))
-
-    running = True
-
-    while running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
+    app = App()
+    app.init()
+    app.run()
 
 
 if __name__ == "__main__":
