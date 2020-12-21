@@ -6,12 +6,19 @@ from src.camera import Camera
 from src.painter import Painter
 
 
+from src.collider import Collider
+
+
 class App:
     def init(self):
         self.objects = []
 
-        character = Character((150, 50))
+        character = Character((150, 50), True)
         self.objects.append(character)
+        self.objects.append(Character((100, 50)))
+        self.objects.append(Character((50, 50)))
+        self.objects.append(Character((0, 50)))
+        character.size = 15
 
         pygame.init()
 
@@ -30,6 +37,15 @@ class App:
             self.update()
             self.draw()
 
+    def get_alive_objects(self):
+        alive_objects = []
+
+        for obj in self.objects:
+            if obj.should_die == False:
+                alive_objects.append(obj)
+
+        return alive_objects
+
     def update(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -39,9 +55,16 @@ class App:
                     Camera.zoom += 0.5
                 elif event.key == pygame.K_DOWN:
                     Camera.zoom -= 0.5
+                elif event.key == pygame.K_LEFT:
+                    self.objects[0].size += 10
+                elif event.key == pygame.K_RIGHT:
+                    self.objects[0].size -= 10
 
         for object in self.objects:
             object.update()
+
+        Collider.handle_collisions(self.objects)
+        self.objects = self.get_alive_objects()
 
         Camera.update()
 

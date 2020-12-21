@@ -1,3 +1,5 @@
+from src import constants
+
 from pygame.math import Vector2
 
 
@@ -9,3 +11,5 @@ class Camera:
     def update():
         if Camera.followed_character:
             Camera.position = Camera.followed_character.position
+            Camera.zoom = constants.CHARACTER_STARTING_SIZE * 10 / \
+                Camera.followed_character.size
