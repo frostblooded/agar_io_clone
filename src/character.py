@@ -4,6 +4,7 @@ from pygame.math import Vector2
 
 from src import constants
 from src.controllers.player_controller import PlayerController
+from src.painter import Painter
 
 
 class Character:
@@ -17,4 +18,4 @@ class Character:
         self.controller.update()
 
     def draw(self, screen):
-        pygame.draw.circle(screen, (255, 0, 0), self.position, self.size)
+        Painter.draw_circle(screen, (255, 0, 0), self.position, self.size)
