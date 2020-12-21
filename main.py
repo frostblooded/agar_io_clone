@@ -1,6 +1,3 @@
-import pygame
-
-import src.constants as constants
 from src.app import App
 
 

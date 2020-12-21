@@ -7,14 +7,13 @@ from src.character import Character
 class App:
     def init(self):
         self.objects = []
-        self.objects.append(Character())
+        self.objects.append(Character((150, 50)))
 
         pygame.init()
 
         self.screen = pygame.display.set_mode(
             (constants.SCREEN_WIDTH, constants.SCREEN_HEIGH))
         pygame.display.set_caption("Agar.io clone")
-        self.screen.fill((255, 255, 255))
 
     def run(self):
         self.running = True
@@ -32,6 +31,8 @@ class App:
             object.update()
 
     def draw(self):
+        self.screen.fill(constants.SCREEN_BACKGROUND_COLOR)
+
         for object in self.objects:
             object.draw(self.screen)
 
