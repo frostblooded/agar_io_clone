@@ -23,10 +23,6 @@ class BlobSpawner:
         radius = random.uniform(min_val, max_val)
         angle = random.uniform(0, 360)
         offset = (cos(angle) * radius, sin(angle) * radius)
-
-        print("Spawning with radius {} and angle {} and offset {}".format(
-              radius, angle, offset))
-
         objects.append(Blob(character.position + offset))
 
     def update(self, objects):

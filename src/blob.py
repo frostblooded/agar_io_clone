@@ -9,12 +9,13 @@ class Blob:
         self.position = Vector2(position)
         self.should_die = False
         self.size = constants.BLOB_SIZE
+        self.color = Painter.get_random_color()
 
     def update(self):
         pass
 
     def draw(self, screen):
-        Painter.draw_circle(screen, (255, 0, 0), self.position, self.size)
+        Painter.draw_circle(screen, self.color, self.position, self.size)
 
     def get_collides_with(self, other_object):
         # Let the other party handle the collision
