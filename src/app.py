@@ -2,6 +2,7 @@ import pygame
 
 from src import constants
 from src.character import Character
+from src.blob import Blob
 from src.camera import Camera
 from src.painter import Painter
 
@@ -15,9 +16,9 @@ class App:
 
         character = Character((150, 50), True)
         self.objects.append(character)
-        self.objects.append(Character((100, 50)))
-        self.objects.append(Character((50, 50)))
-        self.objects.append(Character((0, 50)))
+        self.objects.append(Blob((100, 50)))
+        self.objects.append(Blob((50, 50)))
+        self.objects.append(Blob((0, 50)))
         character.size = 15
 
         pygame.init()

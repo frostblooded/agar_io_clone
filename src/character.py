@@ -28,6 +28,9 @@ class Character:
         Painter.draw_circle(screen, (255, 0, 0), self.position, self.size)
 
     def get_collides_with(self, other_object):
+        if self.should_die or other_object.should_die:
+            return False
+
         distance = (self.position - other_object.position).length()
         return distance < self.size + other_object.size
 
@@ -36,8 +39,10 @@ class Character:
             return
 
         if self.size > other_object.size:
-            self.size += other_object.size / 2
-            other_object.should_die = True
+            self.eat(other_object)
         else:
-            other_object.size += self.size / 2
-            self.should_die = True
+            other_object.eat(self)
+
+    def eat(self, other_object):
+        self.size += other_object.size / 2
+        other_object.should_die = True
