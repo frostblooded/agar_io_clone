@@ -15,10 +15,6 @@ class App:
 
         character = Character((150, 50), True)
         self.objects.append(character)
-        self.objects.append(Blob((100, 50)))
-        self.objects.append(Blob((50, 50)))
-        self.objects.append(Blob((0, 50)))
-        character.size = 15
 
         pygame.init()
 
@@ -51,15 +47,6 @@ class App:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_UP:
-                    Camera.zoom += 0.5
-                elif event.key == pygame.K_DOWN:
-                    Camera.zoom -= 0.5
-                elif event.key == pygame.K_LEFT:
-                    self.objects[0].size += 10
-                elif event.key == pygame.K_RIGHT:
-                    self.objects[0].size -= 10
 
         for object in self.objects:
             object.update()
