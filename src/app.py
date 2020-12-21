@@ -3,6 +3,7 @@ import pygame
 from src import constants
 from src.character import Character
 from src.camera import Camera
+from src.painter import Painter
 
 
 class App:
@@ -17,6 +18,8 @@ class App:
         self.screen = pygame.display.set_mode(
             (constants.SCREEN_WIDTH, constants.SCREEN_HEIGH))
         pygame.display.set_caption("Agar.io clone")
+
+        self.background_image = pygame.image.load('images/background.jpg')
 
         Camera.followed_character = character
 
@@ -39,6 +42,7 @@ class App:
 
     def draw(self):
         self.screen.fill(constants.SCREEN_BACKGROUND_COLOR)
+        Painter.draw_background(self.screen, self.background_image)
 
         for object in self.objects:
             object.draw(self.screen)
