@@ -16,7 +16,7 @@ class App:
         pygame.init()
 
         self.screen = pygame.display.set_mode(
-            (constants.SCREEN_WIDTH, constants.SCREEN_HEIGH))
+            (constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT))
         pygame.display.set_caption("Agar.io clone")
 
         self.background_image = pygame.image.load('images/background.jpg')
