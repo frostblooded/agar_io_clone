@@ -5,8 +5,7 @@ from src.character import Character
 from src.blob import Blob
 from src.camera import Camera
 from src.painter import Painter
-
-
+from src.blob_spawner import BlobSpawner
 from src.collider import Collider
 
 
@@ -30,6 +29,7 @@ class App:
         self.background_image = pygame.image.load('images/background.jpg')
 
         Camera.followed_character = character
+        self.blob_spawner = BlobSpawner()
 
     def run(self):
         self.running = True
@@ -68,6 +68,8 @@ class App:
         self.objects = self.get_alive_objects()
 
         Camera.update()
+
+        self.blob_spawner.update(self.objects)
 
     def draw(self):
         self.screen.fill(constants.SCREEN_BACKGROUND_COLOR)
