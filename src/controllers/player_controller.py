@@ -11,5 +11,10 @@ class PlayerController:
     def update(self):
         field_center = (constants.SCREEN_WIDTH / 2,
                         constants.SCREEN_HEIGHT / 2)
-        movement = (Vector2(pygame.mouse.get_pos()) - field_center).normalize()
+        movement_dir = Vector2(pygame.mouse.get_pos()) - field_center
+
+        if movement_dir.length() == 0:
+            return
+
+        movement = movement_dir.normalize()
         self.character.position += movement * self.character.speed

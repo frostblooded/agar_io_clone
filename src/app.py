@@ -34,6 +34,11 @@ class App:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_UP:
+                    Camera.zoom += 0.5
+                elif event.key == pygame.K_DOWN:
+                    Camera.zoom -= 0.5
 
         for object in self.objects:
             object.update()
