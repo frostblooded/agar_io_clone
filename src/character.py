@@ -4,6 +4,7 @@ from pygame.math import Vector2
 
 from src import constants
 from src.controllers.player_controller import PlayerController
+from src.controllers.ai_controller import AIController
 from src.painter import Painter
 
 
@@ -16,13 +17,13 @@ class Character:
         if player_controlled:
             self.controller = PlayerController(self)
         else:
-            self.controller = None
+            self.controller = AIController(self)
 
         self.should_die = False
 
-    def update(self):
+    def update(self, app):
         if self.controller:
-            self.controller.update()
+            self.controller.update(app)
 
     def draw(self, screen):
         Painter.draw_circle(screen, (255, 0, 0), self.position, self.size)

@@ -15,6 +15,12 @@ class App:
 
         character = Character((150, 50), True)
         self.objects.append(character)
+        self.objects.append(Character((100, 50)))
+        self.objects.append(Character((50, 50)))
+        self.objects.append(Character((0, 50)))
+        self.objects.append(Character((-50, 50)))
+        self.objects.append(Character((-100, 50)))
+        self.objects.append(Character((-150, 50)))
 
         pygame.init()
 
@@ -49,7 +55,7 @@ class App:
                 self.running = False
 
         for object in self.objects:
-            object.update()
+            object.update(self)
 
         Collider.handle_collisions(self.objects)
         self.objects = self.get_alive_objects()

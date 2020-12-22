@@ -8,7 +8,7 @@ class PlayerController:
     def __init__(self, character):
         self.character = character
 
-    def update(self):
+    def update(self, app):
         field_center = (constants.SCREEN_WIDTH / 2,
                         constants.SCREEN_HEIGHT / 2)
         movement_dir = Vector2(pygame.mouse.get_pos()) - field_center
