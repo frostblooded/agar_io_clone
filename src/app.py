@@ -13,14 +13,14 @@ class App:
     def init(self):
         self.objects = []
 
-        character = Character((150, 50), True)
+        character = Character((150, 50), "Player", True)
         self.objects.append(character)
-        self.objects.append(Character((100, 50)))
-        self.objects.append(Character((50, 50)))
-        self.objects.append(Character((0, 50)))
-        self.objects.append(Character((-50, 50)))
-        self.objects.append(Character((-100, 50)))
-        self.objects.append(Character((-150, 50)))
+        self.objects.append(Character((100, 50), "AI 0"))
+        self.objects.append(Character((50, 50), "AI 1"))
+        self.objects.append(Character((0, 50), "AI 2"))
+        self.objects.append(Character((-50, 50), "AI 3"))
+        self.objects.append(Character((-100, 50), "AI 4"))
+        self.objects.append(Character((-150, 50), "AI 5"))
 
         pygame.init()
 
@@ -32,6 +32,8 @@ class App:
 
         Camera.followed_character = character
         self.blob_spawner = BlobSpawner()
+
+        self.font = pygame.font.SysFont('Comic Sans MS', 30)
 
     def run(self):
         self.running = True
@@ -69,6 +71,6 @@ class App:
         Painter.draw_background(self.screen, self.background_image)
 
         for object in self.objects:
-            object.draw(self.screen)
+            object.draw(self)
 
         pygame.display.flip()

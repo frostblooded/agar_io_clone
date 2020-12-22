@@ -14,8 +14,8 @@ class Blob:
     def update(self, app):
         pass
 
-    def draw(self, screen):
-        Painter.draw_circle(screen, self.color, self.position, self.size)
+    def draw(self, app):
+        Painter.draw_circle(app.screen, self.color, self.position, self.size)
 
     def get_collides_with(self, other_object):
         # Let the other party handle the collision

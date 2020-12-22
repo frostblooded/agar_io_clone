@@ -9,10 +9,11 @@ from src.painter import Painter
 
 
 class Character:
-    def __init__(self, position, player_controlled=False):
+    def __init__(self, position, name, player_controlled=False):
         self.position = Vector2(position)
         self.size = constants.CHARACTER_STARTING_SIZE
         self.speed = constants.CHARACTER_STARTING_SPEED
+        self.name = name
 
         if player_controlled:
             self.controller = PlayerController(self)
@@ -25,8 +26,9 @@ class Character:
         if self.controller:
             self.controller.update(app)
 
-    def draw(self, screen):
-        Painter.draw_circle(screen, (255, 0, 0), self.position, self.size)
+    def draw(self, app):
+        Painter.draw_circle(app.screen, (255, 0, 0), self.position, self.size)
+        Painter.draw_text(app, self.name, self.position)
 
     def get_collides_with(self, other_object):
         if self.should_die or other_object.should_die:
