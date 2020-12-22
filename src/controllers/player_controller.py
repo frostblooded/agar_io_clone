@@ -17,4 +17,4 @@ class PlayerController:
             return
 
         movement = movement_dir.normalize()
-        self.character.position += movement * self.character.speed
+        self.character.position += movement * self.character.get_speed()

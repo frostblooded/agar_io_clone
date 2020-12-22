@@ -33,4 +33,4 @@ class AIController:
 
         movement = (closest_blob.position -
                     self.character.position).normalize()
-        self.character.position += movement * self.character.speed
+        self.character.position += movement * self.character.get_speed()

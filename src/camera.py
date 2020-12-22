@@ -11,5 +11,5 @@ class Camera:
     def update():
         if Camera.followed_character:
             Camera.position = Camera.followed_character.position
-            Camera.zoom = constants.CHARACTER_STARTING_SIZE * 10 / \
+            Camera.zoom = constants.CHARACTER_STARTING_SIZE * constants.CAMERA_CHARACTER_ZOOM_MULTIPLIER / \
                 Camera.followed_character.size
