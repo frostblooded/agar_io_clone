@@ -14,13 +14,13 @@ class App:
     def spawn_characters(self):
         # - 1 because we spawn the player character separately
         for i in range(0, constants.CHARACTERS_SPAWN_COUNT - 1):
-            pos = Helpers.get_random_pos()
-            self.objects.append(Character(pos, "AI {}".format(i)))
+            self.objects.append(
+                Character(Helpers.get_random_pos(), "AI {}".format(i)))
 
     def init(self):
         self.objects = []
 
-        character = Character((150, 50), "Player", True)
+        character = Character(Helpers.get_random_pos(), "Player", True)
         self.objects.append(character)
         self.spawn_characters()
 
