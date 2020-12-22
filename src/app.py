@@ -7,20 +7,22 @@ from src.camera import Camera
 from src.painter import Painter
 from src.blob_spawner import BlobSpawner
 from src.collider import Collider
+from src.helpers import Helpers
 
 
 class App:
+    def spawn_characters(self):
+        # - 1 because we spawn the player character separately
+        for i in range(0, constants.CHARACTERS_SPAWN_COUNT - 1):
+            pos = Helpers.get_random_pos()
+            self.objects.append(Character(pos, "AI {}".format(i)))
+
     def init(self):
         self.objects = []
 
         character = Character((150, 50), "Player", True)
         self.objects.append(character)
-        self.objects.append(Character((100, 50), "AI 0"))
-        self.objects.append(Character((50, 50), "AI 1"))
-        self.objects.append(Character((0, 50), "AI 2"))
-        self.objects.append(Character((-50, 50), "AI 3"))
-        self.objects.append(Character((-100, 50), "AI 4"))
-        self.objects.append(Character((-150, 50), "AI 5"))
+        self.spawn_characters()
 
         pygame.init()
 
@@ -32,13 +34,20 @@ class App:
 
         Camera.followed_character = character
         self.blob_spawner = BlobSpawner()
+        self.blob_count = 0
 
         self.font = pygame.font.SysFont('Comic Sans MS', 30)
+        self.clock = pygame.time.Clock()
+
+    def debug_prints(self):
+        print("Time since last frame: {}".format(self.clock.tick(60)))
+        print("Blobs: {}".format(self.blob_count))
 
     def run(self):
         self.running = True
 
         while self.running:
+            self.debug_prints()
             self.update()
             self.draw()
 
@@ -59,12 +68,12 @@ class App:
         for object in self.objects:
             object.update(self)
 
-        Collider.handle_collisions(self.objects)
+        Collider.handle_collisions(self)
         self.objects = self.get_alive_objects()
 
         Camera.update()
 
-        self.blob_spawner.update(self.objects)
+        self.blob_spawner.update(self)
 
     def draw(self):
         self.screen.fill(constants.SCREEN_BACKGROUND_COLOR)

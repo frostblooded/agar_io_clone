@@ -21,6 +21,6 @@ class Blob:
         # Let the other party handle the collision
         return False
 
-    def collide(self, other_object):
+    def collide(self, other_object, app):
         # Let the other object do something about the collision
         pass

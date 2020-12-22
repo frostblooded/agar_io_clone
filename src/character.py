@@ -6,6 +6,7 @@ from src import constants
 from src.controllers.player_controller import PlayerController
 from src.controllers.ai_controller import AIController
 from src.painter import Painter
+from src.blob import Blob
 
 
 from math import log
@@ -16,6 +17,7 @@ class Character:
         self.position = Vector2(position)
         self.size = constants.CHARACTER_STARTING_SIZE
         self.name = name
+        self.color = Painter.get_random_color()
 
         if player_controlled:
             self.controller = PlayerController(self)
@@ -25,12 +27,11 @@ class Character:
         self.should_die = False
 
     def update(self, app):
-        print("Character ({}) speed: {}".format(self.name, self.get_speed()))
         if self.controller:
             self.controller.update(app)
 
     def draw(self, app):
-        Painter.draw_circle(app.screen, (255, 0, 0), self.position, self.size)
+        Painter.draw_circle(app.screen, self.color, self.position, self.size)
         Painter.draw_text(app, self.name, self.position)
 
     def get_collides_with(self, other_object):
@@ -40,18 +41,24 @@ class Character:
         distance = (self.position - other_object.position).length()
         return distance < self.size + other_object.size
 
-    def collide(self, other_object):
+    def collide(self, other_object, app):
+        if self.should_die:
+            return
+
         if self.size == other_object.size:
             return
 
         if self.size > other_object.size:
-            self.eat(other_object)
+            self.eat(other_object, app)
         else:
-            other_object.eat(self)
+            other_object.eat(self, app)
 
-    def eat(self, other_object):
+    def eat(self, other_object, app):
         self.size += other_object.size / 10
         other_object.should_die = True
+
+        if type(other_object) is Blob:
+            app.blob_count -= 1
 
     def get_speed(self):
         # A formula to make bigger characters slower
