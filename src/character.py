@@ -54,7 +54,7 @@ class Character:
             other_object.eat(self, app)
 
     def eat(self, other_object, app):
-        self.size += other_object.size / 10
+        self.size += other_object.size * constants.CHARACTER_BLOB_SIZE_GAIN_MULTIPLIER
         other_object.should_die = True
 
         if type(other_object) is Blob:

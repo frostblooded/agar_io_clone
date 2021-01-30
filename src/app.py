@@ -8,21 +8,18 @@ from src.painter import Painter
 from src.blob_spawner import BlobSpawner
 from src.collider import Collider
 from src.helpers import Helpers
+from src.character_spawner import CharacterSpawner
 
 
 class App:
-    def spawn_characters(self):
-        # - 1 because we spawn the player character separately
-        for i in range(0, constants.CHARACTERS_SPAWN_COUNT - 1):
-            self.objects.append(
-                Character(Helpers.get_random_pos(), "AI {}".format(i)))
-
     def init(self):
         self.objects = []
 
-        character = Character(Helpers.get_random_pos(), "Player", True)
-        self.objects.append(character)
-        self.spawn_characters()
+        self.character_spawner = CharacterSpawner()
+        self.character_spawner.spawn_starting_ai(self)
+
+        player_character = self.character_spawner.spawn_starting_player(self)
+        self.objects.append(player_character)
 
         pygame.init()
 
@@ -32,7 +29,7 @@ class App:
 
         self.background_image = pygame.image.load('images/background.jpg')
 
-        Camera.followed_character = character
+        Camera.followed_character = player_character
         self.blob_spawner = BlobSpawner()
         self.blob_count = 0
 
@@ -74,6 +71,8 @@ class App:
         Camera.update()
 
         self.blob_spawner.update(self)
+
+        self.character_spawner.update(self)
 
     def draw(self):
         self.screen.fill(constants.SCREEN_BACKGROUND_COLOR)
