@@ -37,7 +37,7 @@ class App:
         self.clock = pygame.time.Clock()
 
     def debug_prints(self):
-        print("Time since last frame: {}".format(self.clock.tick(60)))
+        print("Time since last frame: {} milliseconds".format(self.clock.tick(60)))
         print("Blobs: {}".format(self.blob_count))
 
     def run(self):
@@ -77,6 +77,7 @@ class App:
     def draw(self):
         self.screen.fill(constants.SCREEN_BACKGROUND_COLOR)
         Painter.draw_background(self.screen, self.background_image)
+        Painter.draw_boundaries(self.screen)
 
         for object in self.objects:
             object.draw(self)

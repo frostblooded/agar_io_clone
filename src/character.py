@@ -54,11 +54,13 @@ class Character:
             other_object.eat(self, app)
 
     def eat(self, other_object, app):
-        self.size += other_object.size * constants.CHARACTER_BLOB_SIZE_GAIN_MULTIPLIER
+        self.size += other_object.size * constants.CHARACTER_EAT_SIZE_GAIN_MULTIPLIER
         other_object.should_die = True
 
         if type(other_object) is Blob:
             app.blob_count -= 1
+        elif type(other_object) is Character:
+            self.size += constants.CHARACTER_EAT_CHARACTER_ADDITIONAL_GAIN
 
     def get_speed(self):
         # A formula to make bigger characters slower

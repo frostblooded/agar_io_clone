@@ -9,9 +9,9 @@ class PlayerController:
         self.character = character
 
     def update(self, app):
-        field_center = (constants.SCREEN_WIDTH / 2,
-                        constants.SCREEN_HEIGHT / 2)
-        movement_dir = Vector2(pygame.mouse.get_pos()) - field_center
+        screen_center = (constants.SCREEN_WIDTH / 2,
+                         constants.SCREEN_HEIGHT / 2)
+        movement_dir = Vector2(pygame.mouse.get_pos()) - screen_center
 
         if movement_dir.length() == 0:
             return

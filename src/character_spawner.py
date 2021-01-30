@@ -34,3 +34,4 @@ class CharacterSpawner:
                 app.objects.append(
                     Character(Helpers.get_random_pos(), "AI {}".format(self.ai_spawned)))
                 self.ai_spawned += 1
+                self.last_spawn = pygame.time.get_ticks()

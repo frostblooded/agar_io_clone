@@ -13,8 +13,8 @@ class BlobSpawner:
         self.last_spawn = pygame.time.get_ticks()
 
     def spawn_blob(self, app):
-        x = random.uniform(0, constants.SCREEN_WIDTH)
-        y = random.uniform(0, constants.SCREEN_HEIGHT)
+        x = random.uniform(0, constants.FIELD_WIDTH)
+        y = random.uniform(0, constants.FIELD_HEIGHT)
         app.objects.append(Blob((x, y)))
         app.blob_count += 1
 
