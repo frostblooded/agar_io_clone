@@ -13,9 +13,7 @@ class DQN(nn.Module):
         self.out = nn.Linear(in_features=32, out_features=8)
 
     def forward(self, t):
-        print(t.shape)
         t = t.flatten(start_dim=1)
-        print(t.shape)
         t = F.relu(self.fc1(t))
         t = F.relu(self.fc2(t))
         t = self.out(t)

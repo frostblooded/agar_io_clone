@@ -1,6 +1,7 @@
 from src import constants
 from src.character import Character
 from src.helpers import Helpers
+from src.controllers.player_controller import PlayerController
 
 import pygame
 
@@ -14,11 +15,11 @@ class CharacterSpawner:
         # - 1 because we spawn the player character separately
         for _ in range(0, constants.CHARACTER_SPAWNER_MAX_CHARACTERS - 1):
             app.objects.append(
-                Character(Helpers.get_random_pos(), "AI {}".format(self.ai_spawned)))
+                Character(Helpers.get_random_pos(), "AI {}".format(self.ai_spawned), app.ai_controllers.pop()))
             self.ai_spawned += 1
 
     def spawn_starting_player(self, app):
-        return Character(Helpers.get_random_pos(), "Player", True)
+        return Character(Helpers.get_random_pos(), "Player", PlayerController())
 
     def update(self, app):
         current_time = pygame.time.get_ticks()
@@ -31,7 +32,8 @@ class CharacterSpawner:
                     character_count += 1
 
             if character_count < constants.CHARACTER_SPAWNER_MAX_CHARACTERS:
+                print("SPAWNING NEW AI")
                 app.objects.append(
-                    Character(Helpers.get_random_pos(), "AI {}".format(self.ai_spawned)))
+                    Character(Helpers.get_random_pos(), "AI {}".format(self.ai_spawned), app.ai_controllers.pop()))
                 self.ai_spawned += 1
                 self.last_spawn = pygame.time.get_ticks()

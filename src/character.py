@@ -4,7 +4,6 @@ from pygame.math import Vector2
 
 from src import constants
 from src.controllers.player_controller import PlayerController
-from src.controllers.ai_controller import AIController
 from src.painter import Painter
 from src.blob import Blob
 
@@ -13,22 +12,23 @@ from math import log
 
 
 class Character:
-    def __init__(self, position, name, player_controlled=False):
+    def __init__(self, position, name, controller):
         self.position = Vector2(position)
         self.size = constants.CHARACTER_STARTING_SIZE
         self.name = name
         self.color = Painter.get_random_color()
 
-        if player_controlled:
-            self.controller = PlayerController(self)
-        else:
-            self.controller = AIController(self)
+        self.controller = controller
+        self.player_controlled = type(self.controller) is PlayerController
 
         self.should_die = False
+        self.current_reward = -0.01
 
     def update(self, app):
+        self.current_reward = -0.01
+
         if self.controller:
-            self.controller.update(app)
+            self.controller.update(app, self)
 
     def draw(self, app):
         Painter.draw_circle(app.screen, self.color, self.position, self.size)
@@ -54,13 +54,21 @@ class Character:
             other_object.eat(self, app)
 
     def eat(self, other_object, app):
-        self.size += other_object.size * constants.CHARACTER_EAT_SIZE_GAIN_MULTIPLIER
+        size_increase = other_object.size * constants.CHARACTER_EAT_SIZE_GAIN_MULTIPLIER
+        self.size += size_increase
         other_object.should_die = True
+
+        if not self.player_controlled:
+            self.current_reward = size_increase
 
         if type(other_object) is Blob:
             app.blob_count -= 1
         elif type(other_object) is Character:
             self.size += constants.CHARACTER_EAT_CHARACTER_ADDITIONAL_GAIN
+
+            if not other_object.player_controlled:
+                app.ai_controllers.append(other_object.controller)
+                other_object.current_reward = -100
 
     def get_speed(self):
         # A formula to make bigger characters slower

@@ -19,18 +19,19 @@ from src.ai.env_manager import EnvManager
 
 
 class AIController:
-    def __init__(self, character):
-        self.character = character
-        self.em = EnvManager(config.device)
+    def __init__(self):
+        print("CREATING AI CONTROLLER")
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.em = EnvManager(self.device)
         self.strategy = EpsilonGreedyStrategy(
             config.eps_start, config.eps_end, config.eps_decay)
-        self.agent = Agent(self.strategy, config.num_actions, config.device)
+        self.agent = Agent(self.strategy, config.num_actions, self.device)
         self.memory = ReplayMemory(config.memory_size)
 
         self.policy_net = DQN(
-            config.div_rows, config.div_cols).to(config.device)
+            config.div_rows, config.div_cols).to(self.device)
         self.target_net = DQN(
-            config.div_rows, config.div_cols).to(config.device)
+            config.div_rows, config.div_cols).to(self.device)
 
         self.target_net.load_state_dict(self.policy_net.state_dict())
         self.target_net.eval()
@@ -38,13 +39,13 @@ class AIController:
         self.optimizer = optim.Adam(
             params=self.policy_net.parameters(), lr=config.lr)
 
-    def find_closest_blob(self, objects):
+    def find_closest_blob(self, objects, character):
         closest_blob = None
         closest_dist = sys.float_info.max
 
         for obj in objects:
             if type(obj) is Blob:
-                distance = (obj.position - self.character.position).length()
+                distance = (obj.position - character.position).length()
 
                 if distance < closest_dist:
                     closest_dist = distance
@@ -52,10 +53,10 @@ class AIController:
 
         return closest_blob
 
-    def update(self, app):
+    def update(self, app, character):
         state = self.em.get_state()
         action = self.agent.select_action(state, self.policy_net)
-        reward = self.em.take_action(action)
+        reward = torch.tensor([character.current_reward], device=self.device)
         next_state = self.em.get_state()
         self.memory.push(Experience(state, action, next_state, reward))
 
@@ -74,11 +75,11 @@ class AIController:
             loss.backward()
             self.optimizer.step()
 
-        closest_blob = self.find_closest_blob(app.objects)
+        closest_blob = self.find_closest_blob(app.objects, character)
 
         if closest_blob is None:
             return
 
         movement = (closest_blob.position -
-                    self.character.position).normalize()
-        self.character.position += movement * self.character.get_speed()
+                    character.position).normalize()
+        character.position += movement * character.get_speed()

@@ -9,17 +9,22 @@ from src.blob_spawner import BlobSpawner
 from src.collider import Collider
 from src.helpers import Helpers
 from src.character_spawner import CharacterSpawner
+from src.controllers.ai_controller import AIController
 
 
 class App:
     def init(self):
         self.objects = []
+        self.ai_controllers = []
+
+        for i in range(constants.CHARACTER_SPAWNER_MAX_CHARACTERS-1):
+            self.ai_controllers.append(AIController())
 
         self.character_spawner = CharacterSpawner()
         self.character_spawner.spawn_starting_ai(self)
 
-        player_character = self.character_spawner.spawn_starting_player(self)
-        self.objects.append(player_character)
+        self.player_character = self.character_spawner.spawn_starting_player(self)
+        self.objects.append(self.player_character)
 
         pygame.init()
 
@@ -29,7 +34,7 @@ class App:
 
         self.background_image = pygame.image.load('images/background.jpg')
 
-        Camera.followed_character = player_character
+        Camera.followed_character = self.player_character
         self.blob_spawner = BlobSpawner()
         self.blob_count = 0
 
