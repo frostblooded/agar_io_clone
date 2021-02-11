@@ -22,11 +22,9 @@ class Character:
         self.player_controlled = type(self.controller) is PlayerController
 
         self.should_die = False
-        self.current_reward = -0.01
+        self.current_reward = 0
 
     def update(self, app):
-        self.current_reward = -0.01
-
         if self.controller:
             self.controller.update(app, self)
 
@@ -65,11 +63,12 @@ class Character:
             app.blob_count -= 1
         elif type(other_object) is Character:
             self.size += constants.CHARACTER_EAT_CHARACTER_ADDITIONAL_GAIN
+            self.current_reward += constants.CHARACTER_EAT_CHARACTER_ADDITIONAL_GAIN
 
             if not other_object.player_controlled:
                 app.ai_controllers.append(other_object.controller)
                 other_object.current_reward = -100
-            
+
             other_object.controller.on_end_episode(app, self)
 
     def get_speed(self):

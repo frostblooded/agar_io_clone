@@ -1,5 +1,6 @@
 import torch.nn as nn
 import torch.nn.functional as F
+from src.ai.config import num_actions
 
 # totalCharacterMass, maxCharacterMass, playerCount, blobCount
 
@@ -10,7 +11,7 @@ class DQN(nn.Module):
 
         self.fc1 = nn.Linear(in_features=div_rows*div_cols*4, out_features=24)
         self.fc2 = nn.Linear(in_features=24, out_features=32)
-        self.out = nn.Linear(in_features=32, out_features=8)
+        self.out = nn.Linear(in_features=32, out_features=num_actions)
 
     def forward(self, t):
         t = t.flatten(start_dim=1)

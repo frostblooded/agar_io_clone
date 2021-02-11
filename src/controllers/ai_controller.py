@@ -21,7 +21,8 @@ from src.ai.env_manager import EnvManager
 class AIController:
     def __init__(self):
         print("CREATING AI CONTROLLER")
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.device = torch.device(
+            "cuda" if torch.cuda.is_available() else "cpu")
         self.em = EnvManager(self.device)
         self.strategy = EpsilonGreedyStrategy(
             config.eps_start, config.eps_end, config.eps_decay)
@@ -38,6 +39,10 @@ class AIController:
 
         self.optimizer = optim.Adam(
             params=self.policy_net.parameters(), lr=config.lr)
+
+        self.prev_state = None
+        self.prev_action = None
+        self.is_first_step = True
 
     def find_closest_blob(self, objects, character):
         closest_blob = None
@@ -57,11 +62,21 @@ class AIController:
         pass
 
     def update(self, app, character):
-        state = self.em.get_state()
-        action = self.agent.select_action(state, self.policy_net)
-        reward = torch.tensor([character.current_reward], device=self.device)
-        next_state = self.em.get_state()
-        self.memory.push(Experience(state, action, next_state, reward))
+        # to do: calculate get_state before all updates and pass it
+        current_state = self.em.get_state(app)
+        if not self.is_first_step:
+            reward = torch.tensor(
+                [character.current_reward], device=self.device)
+            self.memory.push(Experience(
+                self.prev_state, self.prev_action, current_state, reward))
+
+        action = self.agent.select_action(current_state, self.policy_net)
+        direction = self.em.get_action_direction(action)
+        character.position += direction * character.get_speed()
+
+        self.prev_state = current_state
+        self.prev_action = action
+        self.is_first_step = False
 
         if self.memory.can_provide_sample(config.batch_size):
             experiences = self.memory.sample(config.batch_size)
@@ -77,12 +92,3 @@ class AIController:
             self.optimizer.zero_grad()
             loss.backward()
             self.optimizer.step()
-
-        closest_blob = self.find_closest_blob(app.objects, character)
-
-        if closest_blob is None:
-            return
-
-        movement = (closest_blob.position -
-                    character.position).normalize()
-        character.position += movement * character.get_speed()
