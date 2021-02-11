@@ -15,6 +15,7 @@ class Painter:
         b = random.uniform(0, 255)
         return (r, g, b)
 
+    # world space to screen space coordinates
     @staticmethod
     def to_zoomed_camera_pos(pos):
         zoomed_position = pos * Camera.zoom
