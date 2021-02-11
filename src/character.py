@@ -24,9 +24,9 @@ class Character:
         self.should_die = False
         self.current_reward = 0
 
-    def update(self, app):
+    def update(self, app, current_state):
         if self.controller:
-            self.controller.update(app, self)
+            self.controller.update(app, self, current_state)
 
     def draw(self, app):
         Painter.draw_circle(app.screen, self.color, self.position, self.size)

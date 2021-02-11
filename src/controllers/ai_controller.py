@@ -61,9 +61,7 @@ class AIController:
     def on_end_episode(self, app, character):
         pass
 
-    def update(self, app, character):
-        # to do: calculate get_state before all updates and pass it
-        current_state = self.em.get_state(app)
+    def update(self, app, character, current_state):
         if not self.is_first_step:
             reward = torch.tensor(
                 [character.current_reward], device=self.device)

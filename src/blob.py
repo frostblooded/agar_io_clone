@@ -11,7 +11,7 @@ class Blob:
         self.size = constants.BLOB_SIZE
         self.color = Painter.get_random_color()
 
-    def update(self, app):
+    def update(self, app, current_state):
         pass
 
     def draw(self, app):

@@ -8,7 +8,7 @@ class PlayerController:
     def on_end_episode(self, app, character):
         pass
 
-    def update(self, app, character):
+    def update(self, app, character, current_state):
         screen_center = (constants.SCREEN_WIDTH / 2,
                          constants.SCREEN_HEIGHT / 2)
         movement_dir = Vector2(pygame.mouse.get_pos()) - screen_center

@@ -1,4 +1,5 @@
 import pygame
+import torch
 
 from src import constants
 from src.character import Character
@@ -10,6 +11,7 @@ from src.collider import Collider
 from src.helpers import Helpers
 from src.character_spawner import CharacterSpawner
 from src.controllers.ai_controller import AIController
+from src.ai.env_manager import EnvManager
 
 
 class App:
@@ -23,7 +25,8 @@ class App:
         self.character_spawner = CharacterSpawner()
         self.character_spawner.spawn_starting_ai(self)
 
-        self.player_character = self.character_spawner.spawn_starting_player(self)
+        self.player_character = self.character_spawner.spawn_starting_player(
+            self)
         self.objects.append(self.player_character)
 
         pygame.init()
@@ -40,6 +43,10 @@ class App:
 
         self.font = pygame.font.SysFont('Comic Sans MS', 30)
         self.clock = pygame.time.Clock()
+
+        self.device = torch.device(
+            "cuda" if torch.cuda.is_available() else "cpu")
+        self.em = EnvManager(self.device)
 
     def debug_prints(self):
         print("Time since last frame: {} milliseconds".format(self.clock.tick(60)))
@@ -67,8 +74,10 @@ class App:
             if event.type == pygame.QUIT:
                 self.running = False
 
+        current_state = self.em.get_state(self)
+
         for object in self.objects:
-            object.update(self)
+            object.update(self, current_state)
 
         Collider.handle_collisions(self)
         self.objects = self.get_alive_objects()
