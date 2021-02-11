@@ -53,6 +53,9 @@ class AIController:
 
         return closest_blob
 
+    def on_end_episode(self, app, character):
+        pass
+
     def update(self, app, character):
         state = self.em.get_state()
         action = self.agent.select_action(state, self.policy_net)

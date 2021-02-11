@@ -69,6 +69,8 @@ class Character:
             if not other_object.player_controlled:
                 app.ai_controllers.append(other_object.controller)
                 other_object.current_reward = -100
+            
+            other_object.controller.on_end_episode(app, self)
 
     def get_speed(self):
         # A formula to make bigger characters slower

@@ -5,6 +5,9 @@ from src import constants
 
 
 class PlayerController:
+    def on_end_episode(self, app, character):
+        pass
+
     def update(self, app, character):
         screen_center = (constants.SCREEN_WIDTH / 2,
                          constants.SCREEN_HEIGHT / 2)
