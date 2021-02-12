@@ -58,7 +58,7 @@ class Painter:
     def draw_circle(screen, color, position, radius):
         zoomed_radius = radius * Camera.zoom
         zoomed_position = Painter.to_zoomed_camera_pos(position)
-        pygame.draw.circle(screen, color, zoomed_position, zoomed_radius)
+        pygame.draw.circle(screen, color, zoomed_position, int(zoomed_radius))
 
     @staticmethod
     def draw_line(screen, color, start_pos, end_pos):
