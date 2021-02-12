@@ -1,6 +1,5 @@
 import pygame
 from pygame.math import Vector2
-import threading
 
 
 from src import constants
@@ -70,12 +69,7 @@ class Character:
                 app.ai_controllers.append(other_object.controller)
                 other_object.current_reward = -100
 
-            # thread.start_new_thread(
-            #     other_object.controller.on_end_episode, (app, self, ))
-            t = threading.Thread(
-                target=other_object.controller.on_end_episode, args=(app, self,))
-            t.start()
-            # other_object.controller.on_end_episode(app, self)
+            other_object.controller.on_end_episode(app, self)
 
     def get_speed(self):
         # A formula to make bigger characters slower

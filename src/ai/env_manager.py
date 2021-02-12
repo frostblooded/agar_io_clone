@@ -67,9 +67,7 @@ class EnvManager():
         for obj in app.objects:
             pos = obj.position
             i = min(math.floor(pos.y / self.cell_height), div_rows - 1)
-            i = max(0, i)
             j = min(math.floor(pos.x / self.cell_width), div_cols - 1)
-            j = max(0, j)
             if type(obj) is Blob:
                 state[i][j].blobCount += 1
             elif type(obj) is Character:
