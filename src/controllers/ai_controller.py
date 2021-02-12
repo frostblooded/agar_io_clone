@@ -47,20 +47,6 @@ class AIController:
         self.episode_index = 0
         self.frame_index = 0
 
-    def find_closest_blob(self, objects, character):
-        closest_blob = None
-        closest_dist = sys.float_info.max
-
-        for obj in objects:
-            if type(obj) is Blob:
-                distance = (obj.position - character.position).length()
-
-                if distance < closest_dist:
-                    closest_dist = distance
-                    closest_blob = obj
-
-        return closest_blob
-
     def on_end_episode(self, app, character):
         self.episode_index += 1
 
