@@ -1,5 +1,3 @@
-import torch
-
 batch_size = 256
 gamma = 0.999
 eps_start = 1
