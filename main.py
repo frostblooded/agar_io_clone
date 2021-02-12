@@ -1,10 +1,9 @@
-from src.app import App
+from src.app_manager import AppManager
 
 
 def main():
-    app = App()
-    app.init()
-    app.run()
+    appManager = AppManager()
+    appManager.run()
 
 
 if __name__ == "__main__":

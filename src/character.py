@@ -70,8 +70,6 @@ class Character:
                 app.ai_controllers.append(other_object.controller)
                 other_object.current_reward = -100
 
-            # thread.start_new_thread(
-            #     other_object.controller.on_end_episode, (app, self, ))
             t = threading.Thread(
                 target=other_object.controller.on_end_episode, args=(app, self,))
             t.start()
