@@ -16,6 +16,7 @@ from src.ai.experience import Experience, ReplayMemory, extract_tensors
 from src.ai.dqn import DQN
 from src.ai.qvalues import QValues
 from src.ai.env_manager import EnvManager
+from src.ai.config import target_update_period
 
 
 class AIController:
@@ -43,6 +44,7 @@ class AIController:
         self.prev_state = None
         self.prev_action = None
         self.is_first_step = True
+        self.episode_index = 0
 
     def find_closest_blob(self, objects, character):
         closest_blob = None
@@ -59,7 +61,11 @@ class AIController:
         return closest_blob
 
     def on_end_episode(self, app, character):
-        pass
+        self.episode_index += 1
+
+        # sync target net
+        if self.episode_index % target_update_period == 0:
+            self.target_net.load_state_dict(self.policy_net.state_dict())
 
     def update(self, app, character, current_state):
         if not self.is_first_step:
