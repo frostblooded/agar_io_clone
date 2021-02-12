@@ -19,7 +19,7 @@ class App:
         self.objects = []
         self.ai_controllers = []
 
-        for i in range(constants.CHARACTER_SPAWNER_MAX_CHARACTERS-1):
+        for i in range(constants.CHARACTER_SPAWNER_MAX_CHARACTERS):
             self.ai_controllers.append(AIController())
 
         self.character_spawner = CharacterSpawner()

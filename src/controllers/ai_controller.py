@@ -46,20 +46,6 @@ class AIController:
         self.is_first_step = True
         self.episode_index = 0
 
-    def find_closest_blob(self, objects, character):
-        closest_blob = None
-        closest_dist = sys.float_info.max
-
-        for obj in objects:
-            if type(obj) is Blob:
-                distance = (obj.position - character.position).length()
-
-                if distance < closest_dist:
-                    closest_dist = distance
-                    closest_blob = obj
-
-        return closest_blob
-
     def on_end_episode(self, app, character):
         self.episode_index += 1
 
@@ -83,16 +69,22 @@ class AIController:
         self.is_first_step = False
 
         if self.memory.can_provide_sample(config.batch_size):
+
             experiences = self.memory.sample(config.batch_size)
+
             states, actions, rewards, next_states = extract_tensors(
                 experiences)
-
             current_q_values = QValues.get_current(
                 self.policy_net, states, actions)
+
             next_q_values = QValues.get_next(self.target_net, next_states)
             target_q_values = (next_q_values * config.gamma) + rewards
 
+            start_time = pygame.time.get_ticks()
             loss = F.mse_loss(current_q_values, target_q_values.unsqueeze(1))
+            print("AI controller took {} milliseconds".format(
+                pygame.time.get_ticks() - start_time))
+
             self.optimizer.zero_grad()
             loss.backward()
             self.optimizer.step()

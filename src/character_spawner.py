@@ -13,7 +13,7 @@ class CharacterSpawner:
 
     def spawn_starting_ai(self, app):
         # - 1 because we spawn the player character separately
-        for _ in range(0, constants.CHARACTER_SPAWNER_MAX_CHARACTERS - 1):
+        for _ in range(0, constants.CHARACTER_SPAWNER_MAX_CHARACTERS):
             app.objects.append(
                 Character(Helpers.get_random_pos(), "AI {}".format(self.ai_spawned), app.ai_controllers.pop()))
             self.ai_spawned += 1
