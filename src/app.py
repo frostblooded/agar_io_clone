@@ -25,10 +25,6 @@ class App:
         self.character_spawner = CharacterSpawner()
         self.character_spawner.spawn_starting_ai(self)
 
-        self.player_character = self.character_spawner.spawn_starting_player(
-            self)
-        self.objects.append(self.player_character)
-
         pygame.init()
 
         self.screen = pygame.display.set_mode(
@@ -37,7 +33,7 @@ class App:
 
         self.background_image = pygame.image.load('images/background.jpg')
 
-        Camera.followed_character = self.player_character
+        Camera.followed_character = self.get_random_ai_character()
         self.blob_spawner = BlobSpawner()
         self.blob_count = 0
 
@@ -68,6 +64,18 @@ class App:
                 alive_objects.append(obj)
 
         return alive_objects
+    
+    def get_random_ai_character(self):
+        import random
+
+        ai_characters = []
+
+        for obj in self.objects:
+            if type(obj) is Character and not obj.player_controlled:
+                ai_characters.append(obj)
+        
+        return random.choice(ai_characters)
+
 
     def update(self):
         for event in pygame.event.get():
@@ -79,14 +87,19 @@ class App:
         for object in self.objects:
             object.update(self, current_state)
 
-        Collider.handle_collisions(self)
-        self.objects = self.get_alive_objects()
-
         Camera.update()
 
         self.blob_spawner.update(self)
 
         self.character_spawner.update(self)
+
+        Collider.handle_collisions(self)
+
+        if Camera.followed_character.should_die:
+            Camera.followed_character = self.get_random_ai_character()
+
+        self.objects = self.get_alive_objects()
+
 
     def draw(self):
         self.screen.fill(constants.SCREEN_BACKGROUND_COLOR)
