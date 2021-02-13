@@ -34,7 +34,8 @@ class CharacterSpawner:
 
             if character_count < constants.CHARACTER_SPAWNER_MAX_CHARACTERS:
                 print("SPAWNING NEW AI")
+                controller = app.ai_controllers.pop()
                 app.objects.append(
-                    Character(Helpers.get_random_pos(), "AI {}".format(self.ai_spawned), app.ai_controllers.pop()))
+                    Character(Helpers.get_random_pos(), "AI {}".format(controller.index), controller))
                 self.ai_spawned += 1
                 self.last_spawn = pygame.time.get_ticks()
