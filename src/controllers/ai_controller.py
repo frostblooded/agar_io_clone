@@ -10,7 +10,7 @@ from src.blob import Blob
 import sys
 
 from src.ai import config
-from src.ai.strategy import EpsilonGreedyStrategy
+from src.ai.strategy import EpsilonGreedyStrategy, ExploitStrategy
 from src.ai.agent import Agent
 from src.ai.experience import Experience, ReplayMemory, extract_tensors
 from src.ai.dqn import DQN
@@ -20,33 +20,41 @@ from src.ai.config import target_update_period
 
 
 class AIController:
-    def __init__(self):
+    def __init__(self, is_training_mode):
         print("CREATING AI CONTROLLER")
+        self.is_training_mode = is_training_mode
         self.device = torch.device(
             "cuda" if torch.cuda.is_available() else "cpu")
         self.em = EnvManager(self.device)
-        self.strategy = EpsilonGreedyStrategy(
-            config.eps_start, config.eps_end, config.eps_decay)
+
+        if self.is_training_mode:
+            self.strategy = EpsilonGreedyStrategy(
+                config.eps_start, config.eps_end, config.eps_decay)
+        else:
+            self.strategy = ExploitStrategy()
+
         self.agent = Agent(self.strategy, config.num_actions, self.device)
-        self.memory = ReplayMemory(config.memory_size)
 
         self.policy_net = DQN(
             config.div_rows, config.div_cols).to(self.device)
-        self.target_net = DQN(
-            config.div_rows, config.div_cols).to(self.device)
 
-        self.target_net.load_state_dict(self.policy_net.state_dict())
-        self.target_net.eval()
-
-        self.optimizer = optim.Adam(
-            params=self.policy_net.parameters(), lr=config.lr)
-
-        self.prev_state = None
-        self.prev_action = None
-        self.is_first_step = True
-        self.episode_index = 0
+        if self.is_training_mode:
+            self.memory = ReplayMemory(config.memory_size)
+            self.target_net = DQN(
+                config.div_rows, config.div_cols).to(self.device)
+            self.target_net.load_state_dict(self.policy_net.state_dict())
+            self.target_net.eval()
+            self.optimizer = optim.Adam(
+                params=self.policy_net.parameters(), lr=config.lr)
+            self.prev_state = None
+            self.prev_action = None
+            self.is_first_step = True
+            self.episode_index = 0
 
     def on_end_episode(self, app, character):
+        if not self.is_training_mode:
+            return
+
         self.episode_index += 1
 
         # sync target net
@@ -54,15 +62,19 @@ class AIController:
             self.target_net.load_state_dict(self.policy_net.state_dict())
 
     def update(self, app, character, current_state):
+        action = self.agent.select_action(current_state, self.policy_net)
+        direction = self.em.get_action_direction(action)
+        character.position += direction * character.get_speed()
+
+        if not self.is_training_mode:
+            return
+
+        # training
         if not self.is_first_step:
             reward = torch.tensor(
                 [character.current_reward], device=self.device)
             self.memory.push(Experience(
                 self.prev_state, self.prev_action, current_state, reward))
-
-        action = self.agent.select_action(current_state, self.policy_net)
-        direction = self.em.get_action_direction(action)
-        character.position += direction * character.get_speed()
 
         self.prev_state = current_state
         self.prev_action = action
