@@ -35,6 +35,9 @@ class App:
             self.ai_controllers.append(
                 AIController(None, self, len(self.ai_controllers)))
 
+        for c in self.ai_controllers:
+            c.app = self
+
         self.character_spawner = CharacterSpawner()
         self.character_spawner.spawn_starting_ai(self)
 
