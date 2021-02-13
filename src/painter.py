@@ -1,9 +1,12 @@
 import pygame
 from pygame.math import Vector2
+from pygame import Color
 
 from src import constants
 from src.camera import Camera
 from src.helpers import Helpers
+
+from src.ai import config
 
 import random
 
@@ -71,3 +74,39 @@ class Painter:
                           (0, height), (width, height))
         Painter.draw_line(screen, color,
                           (width, height), (width, 0))
+
+    @staticmethod
+    def debug_draw_screen_cells(app, controller):
+        screen = app.screen
+        cell_width = controller.em.cell_width
+        cell_height = controller.em.cell_height
+        rows_count = config.div_rows
+        cols_count = config.div_cols
+
+        color = pygame.Color(255, 0, 0)
+
+        state = controller.em.get_state(app, controller)
+
+        for i in range(rows_count):
+            for j in range(cols_count):
+                curState = state[0][i * rows_count + j]
+                text = "[{}, {}, {}, {}]".format(
+                    int(curState[0]), int(curState[1]), int(curState[2]), int(curState[3]))
+                text_surface = app.debug_font.render(text, False, (0, 0, 0))
+                app.screen.blit(
+                    text_surface, (i * cell_width + 10, j * cell_height + 10))
+
+                pygame.draw.line(screen, color,
+                                 Vector2(j * cell_width, i * cell_height),
+                                 Vector2((j + 1) * cell_width, i * cell_height))
+                pygame.draw.line(screen, color,
+                                 Vector2(j * cell_width, i * cell_height),
+                                 Vector2(j * cell_width, (i + 1) * cell_height))
+                pygame.draw.line(screen, color,
+                                 Vector2((j + 1) * cell_width,
+                                         i * cell_height),
+                                 Vector2((j + 1) * cell_width, (i + 1) * cell_height))
+                pygame.draw.line(screen, color,
+                                 Vector2(j * cell_width,
+                                         (i + 1) * cell_height),
+                                 Vector2((j + 1) * cell_width, (i + 1) * cell_height))

@@ -6,6 +6,8 @@ import torch.nn.functional as F
 
 from src import constants
 from src.blob import Blob
+from src.painter import Painter
+from src.camera import Camera
 
 import sys
 
@@ -20,10 +22,11 @@ from src.ai.config import target_update_period
 
 
 class AIController:
-    def __init__(self):
+    def __init__(self, character):
         print("CREATING AI CONTROLLER")
         self.device = torch.device(
             "cuda" if torch.cuda.is_available() else "cpu")
+        self.character = character
         self.em = EnvManager(self.device)
         self.strategy = EpsilonGreedyStrategy(
             config.eps_start, config.eps_end, config.eps_decay)
@@ -46,23 +49,28 @@ class AIController:
         self.is_first_step = True
         self.episode_index = 0
 
-    def on_end_episode(self, app, character):
+    def on_end_episode(self, app):
         self.episode_index += 1
 
         # sync target net
         if self.episode_index % target_update_period == 0:
             self.target_net.load_state_dict(self.policy_net.state_dict())
 
-    def update(self, app, character, current_state):
+    def update(self, app):
+        start_time = pygame.time.get_ticks()
+        current_state = self.em.get_state(app, self)
+        print("get_state(...) took {} milliseconds".format(
+            pygame.time.get_ticks() - start_time))
+
         if not self.is_first_step:
             reward = torch.tensor(
-                [character.current_reward], device=self.device)
+                [self.character.current_reward], device=self.device)
             self.memory.push(Experience(
                 self.prev_state, self.prev_action, current_state, reward))
 
         action = self.agent.select_action(current_state, self.policy_net)
         direction = self.em.get_action_direction(action)
-        character.position += direction * character.get_speed()
+        self.character.position += direction * self.character.get_speed()
 
         self.prev_state = current_state
         self.prev_action = action
@@ -82,3 +90,7 @@ class AIController:
             self.optimizer.zero_grad()
             loss.backward()
             self.optimizer.step()
+
+    def draw(self, app):
+        if Camera.followed_character == self.character:
+            Painter.debug_draw_screen_cells(app, self)

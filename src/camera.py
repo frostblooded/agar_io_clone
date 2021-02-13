@@ -8,6 +8,7 @@ class Camera:
     followed_character = None
     zoom = 1
 
+    @staticmethod
     def update():
         if Camera.followed_character:
             Camera.position = Camera.followed_character.position

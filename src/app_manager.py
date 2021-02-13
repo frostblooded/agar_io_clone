@@ -6,8 +6,13 @@ class AppManager:
         self.ai_controllers = []
 
     def run(self):
-        while True:
+        running = True
+
+        while running:
             app = App()
             app.init(self.ai_controllers)
             self.ai_controllers = app.ai_controllers
-            app.run()
+            should_exit = app.run()
+            running = not should_exit
+
+

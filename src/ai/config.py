@@ -10,5 +10,5 @@ memory_size = 100000
 lr = 0.001
 num_episodes = 1000
 num_actions = 8
-div_rows = 10
-div_cols = 10
+div_rows = 3
+div_cols = 3

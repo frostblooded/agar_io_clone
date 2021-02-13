@@ -5,6 +5,7 @@ from src.camera import Camera
 
 from pygame.math import Vector2
 
+
 class Helpers:
     @staticmethod
     def get_random_pos():
@@ -22,3 +23,8 @@ class Helpers:
 
         return moved_position
 
+    @staticmethod
+    def circle_intersects_rect(circle_x, circle_y, circle_radius, rect_x, rect_y, rect_width, rect_height):
+        return circle_x + circle_radius > rect_x and circle_x - circle_radius < rect_x + rect_width and \
+            circle_y + circle_radius > rect_y and circle_y - \
+            circle_radius < rect_y + rect_height

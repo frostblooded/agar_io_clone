@@ -19,18 +19,20 @@ class Character:
         self.color = Painter.get_random_color()
 
         self.controller = controller
+        self.controller.character = self
         self.player_controlled = type(self.controller) is PlayerController
 
         self.should_die = False
         self.current_reward = 0
 
-    def update(self, app, current_state):
+    def update(self, app):
         if self.controller:
-            self.controller.update(app, self, current_state)
+            self.controller.update(app)
 
     def draw(self, app):
         Painter.draw_circle(app.screen, self.color, self.position, self.size)
         Painter.draw_text(app, self.name, self.position)
+        self.controller.draw(app)
 
     def get_collides_with(self, other_object):
         if self.should_die or other_object.should_die:
@@ -69,7 +71,7 @@ class Character:
                 app.ai_controllers.append(other_object.controller)
                 other_object.current_reward = -100
 
-            other_object.controller.on_end_episode(app, self)
+            other_object.controller.on_end_episode(app)
 
     def get_speed(self):
         # A formula to make bigger characters slower

@@ -6,6 +6,8 @@ from src.constants import SCREEN_WIDTH, SCREEN_HEIGHT, FIELD_WIDTH, FIELD_HEIGHT
 from src.ai.config import div_rows, div_cols
 from src.blob import Blob
 from src.character import Character
+from src.helpers import Helpers
+from src.camera import Camera
 
 
 class CellFeatures:
@@ -37,8 +39,8 @@ class EnvManager():
             y = math.sin(angle)
             self.action_directions.append(Vector2(x, y))
 
-        self.cell_width = FIELD_WIDTH / div_cols
-        self.cell_height = FIELD_HEIGHT / div_rows
+        self.cell_width = SCREEN_WIDTH / div_cols
+        self.cell_height = SCREEN_HEIGHT / div_rows
 
     def reset(self):
         self.env.reset()
@@ -60,23 +62,35 @@ class EnvManager():
     def just_starting(self):
         return self.current_screen is None
 
-    def get_state(self, app):
+    def object_is_in_cell(self, obj, cell_i, cell_j, controller):
+        pos = Helpers.world_space_to_screen_space(obj.position)
+        radius = obj.size * Camera.zoom
+        rect_x = self.cell_width * cell_j
+        rect_y = self.cell_height * cell_i
+        return Helpers.circle_intersects_rect(pos.x, pos.y,
+                                              radius, rect_x, rect_y, self.cell_width, self.cell_height)
+
+    def get_state(self, app, controller):
         state = [[CellFeatures() for j in range(div_cols)]
                  for i in range(div_rows)]
 
         for obj in app.objects:
-            pos = obj.position
-            i = min(math.floor(pos.y / self.cell_height), div_rows - 1)
-            j = min(math.floor(pos.x / self.cell_width), div_cols - 1)
-            if type(obj) is Blob:
-                state[i][j].blobCount += 1
-            elif type(obj) is Character:
-                state[i][j].playerCount += 1
-                state[i][j].totalCharacterMass += obj.size
-                state[i][j].maxCharacterMass = max(
-                    state[i][j].maxCharacterMass, obj.size)
+            # Don't count the current character
+            if controller.character == obj:
+                continue
 
-        stateArray = [[state[i][j].toArray() for j in range(div_cols)]
+            for i in range(div_rows):
+                for j in range(div_cols):
+                    if self.object_is_in_cell(obj, i, j, controller):
+                        if type(obj) is Blob:
+                            state[i][j].blobCount += 1
+                        elif type(obj) is Character:
+                            state[i][j].playerCount += 1
+                            state[i][j].totalCharacterMass += obj.size
+                            state[i][j].maxCharacterMass = max(
+                                state[i][j].maxCharacterMass, obj.size)
+
+        stateArray = [state[i][j].toArray() for j in range(div_cols)
                       for i in range(div_rows)]
         return torch.tensor([stateArray], device=self.device, dtype=torch.float32)
 

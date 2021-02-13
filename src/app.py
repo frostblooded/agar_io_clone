@@ -22,7 +22,7 @@ class App:
         ai_controllers_to_create = constants.CHARACTER_SPAWNER_MAX_CHARACTERS - \
             len(self.ai_controllers)
         for _ in range(ai_controllers_to_create):
-            self.ai_controllers.append(AIController())
+            self.ai_controllers.append(AIController(None))
 
         self.character_spawner = CharacterSpawner()
         self.character_spawner.spawn_starting_ai(self)
@@ -40,6 +40,7 @@ class App:
         self.blob_count = 0
 
         self.font = pygame.font.SysFont('Comic Sans MS', 30)
+        self.debug_font = pygame.font.SysFont('Comic Sans MS', 10)
         self.clock = pygame.time.Clock()
 
         self.device = torch.device(
@@ -52,12 +53,15 @@ class App:
 
     def run(self):
         self.running = True
+        self.should_exit = False
         self.episode_start_time = pygame.time.get_ticks()
 
         while self.running:
             self.debug_prints()
             self.update()
             self.draw()
+
+        return self.should_exit
 
     def get_alive_objects(self):
         alive_objects = []
@@ -82,6 +86,7 @@ class App:
     def update(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                self.should_exit = True
                 self.running = False
                 return
 
@@ -92,10 +97,8 @@ class App:
             self.running = False
             return
 
-        current_state = self.em.get_state(self)
-
         for object in self.objects:
-            object.update(self, current_state)
+            object.update(self)
 
         Camera.update()
 
