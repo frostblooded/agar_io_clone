@@ -24,3 +24,6 @@ class Blob:
     def collide(self, other_object, app):
         # Let the other object do something about the collision
         pass
+
+    def die(self, app):
+        self.should_die = True

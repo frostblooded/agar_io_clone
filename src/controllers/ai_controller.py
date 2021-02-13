@@ -40,6 +40,8 @@ class AIController:
         self.policy_net = DQN(
             config.div_rows, config.div_cols).to(self.device)
 
+        self.frame_index = 0
+
         if self.app.is_training_mode:
             self.memory = ReplayMemory(config.memory_size)
             self.target_net = DQN(
@@ -51,19 +53,13 @@ class AIController:
             self.prev_state = None
             self.prev_action = None
             self.is_first_step = True
-            self.episode_index = 0
-
-    def on_end_episode(self):
-        if not self.app.is_training_mode:
-            return
-
-        self.episode_index += 1
-
-        # sync target net
-        if self.episode_index % target_update_period == 0:
-            self.target_net.load_state_dict(self.policy_net.state_dict())
 
     def update(self):
+        self.frame_index += 1
+
+        if Camera.followed_character == self.character:
+            print("Frame index: {}".format(self.frame_index))
+
         # start_time = pygame.time.get_ticks()
         current_state = self.em.get_state(self.app, self)
         # print("get_state(...) took {} milliseconds".format(
@@ -101,6 +97,11 @@ class AIController:
             self.optimizer.zero_grad()
             loss.backward()
             self.optimizer.step()
+
+        if self.frame_index % target_update_period == 0:
+            if Camera.followed_character == self.character:
+                print("Update target net")
+            self.target_net.load_state_dict(self.policy_net.state_dict())
 
     def draw(self):
         if self.app.debug_mode:

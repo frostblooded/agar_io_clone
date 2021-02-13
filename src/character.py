@@ -56,7 +56,7 @@ class Character:
     def eat(self, other_object, app):
         size_increase = other_object.size * constants.CHARACTER_EAT_SIZE_GAIN_MULTIPLIER
         self.size += size_increase
-        other_object.should_die = True
+        other_object.die(app)
 
         if not self.player_controlled:
             self.current_reward = size_increase
@@ -68,10 +68,13 @@ class Character:
             self.current_reward += constants.CHARACTER_EAT_CHARACTER_ADDITIONAL_GAIN
 
             if not other_object.player_controlled:
-                app.ai_controllers.append(other_object.controller)
                 other_object.current_reward = -100
 
-            other_object.controller.on_end_episode()
+    def die(self, app):
+        self.should_die = True
+
+        if not self.player_controlled:
+            app.ai_controllers.append(self.controller)
 
     def get_speed(self):
         # A formula to make bigger characters slower
