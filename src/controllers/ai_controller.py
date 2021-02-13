@@ -18,12 +18,13 @@ from src.ai.experience import Experience, ReplayMemory, extract_tensors
 from src.ai.dqn import DQN
 from src.ai.qvalues import QValues
 from src.ai.env_manager import EnvManager
-from src.ai.config import target_update_period
+from src.ai.config import target_update_period, model_save_period
 
 
 class AIController:
-    def __init__(self, character, app):
+    def __init__(self, character, app, index):
         self.app = app
+        self.index = index
         self.device = torch.device(
             "cuda" if torch.cuda.is_available() else "cpu")
         self.character = character
@@ -39,8 +40,12 @@ class AIController:
 
         self.policy_net = DQN(
             config.div_rows, config.div_cols).to(self.device)
+        if self.app.should_load_models:
+            self.policy_net.load_state_dict(
+                torch.load(f'{self.app.load_models_path}\\{self.index}'))
 
         if self.app.is_training_mode:
+            self.policy_net.eval()
             self.memory = ReplayMemory(config.memory_size)
             self.target_net = DQN(
                 config.div_rows, config.div_cols).to(self.device)
@@ -62,6 +67,10 @@ class AIController:
         # sync target net
         if self.episode_index % target_update_period == 0:
             self.target_net.load_state_dict(self.policy_net.state_dict())
+
+        if self.app.should_save_models and self.episode_index % model_save_period == 0:
+            torch.save(self.policy_net.state_dict(),
+                       f'{self.app.save_models_path}\\{self.index}')
 
     def update(self):
         # start_time = pygame.time.get_ticks()

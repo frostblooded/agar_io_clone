@@ -15,9 +15,15 @@ from src.ai.env_manager import EnvManager
 
 
 class App:
-    def __init__(self, is_training_mode, debug_mode):
-        self.is_training_mode = is_training_mode
-        self.debug_mode = debug_mode
+    def __init__(self, args):
+        self.is_training_mode = args.training
+        self.debug_mode = args.debug
+        self.should_load_models = (args.load_models is not None)
+        if self.should_load_models:
+            self.load_models_path = args.load_models
+        self.should_save_models = (args.save_models is not None)
+        if self.should_save_models:
+            self.save_models_path = args.save_models
 
     def init(self, ai_controllers=[]):
         self.objects = []
@@ -27,7 +33,7 @@ class App:
             len(self.ai_controllers)
         for _ in range(ai_controllers_to_create):
             self.ai_controllers.append(
-                AIController(None, self))
+                AIController(None, self, len(self.ai_controllers)))
 
         self.character_spawner = CharacterSpawner()
         self.character_spawner.spawn_starting_ai(self)
@@ -98,7 +104,8 @@ class App:
         if pygame.time.get_ticks() - self.episode_start_time > 60000:
             for obj in self.objects:
                 if type(obj) is Character and not obj.player_controlled:
-                    obj.controller.on_end_episode(self, obj)
+                    obj.controller.on_end_episode()
+                    self.ai_controllers.append(obj.controller)
             self.running = False
             return
 
