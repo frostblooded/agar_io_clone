@@ -42,5 +42,5 @@ class Collider:
                     char.collide(other_char, app)
                     other_char.collide(char, app)
 
-        print("Collision detection took {} milliseconds".format(
-            pygame.time.get_ticks() - start_time))
+        # print("Collision detection took {} milliseconds".format(
+        #     pygame.time.get_ticks() - start_time))

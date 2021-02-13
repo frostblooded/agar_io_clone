@@ -70,8 +70,8 @@ class AIController:
     def update(self):
         self.frame_index += 1
 
-        if Camera.followed_character == self.character:
-            print("Frame index: {}".format(self.frame_index))
+        # if Camera.followed_character == self.character:
+        #     print("Frame index: {}".format(self.frame_index))
 
         # start_time = pygame.time.get_ticks()
         current_state = self.em.get_state(self.app, self)
@@ -112,8 +112,8 @@ class AIController:
             self.optimizer.step()
 
         if self.frame_index % target_update_period == 0:
-            if Camera.followed_character == self.character:
-                print("Update target net")
+            # if Camera.followed_character == self.character:
+            #     print("Update target net")
             self.target_net.load_state_dict(self.policy_net.state_dict())
 
     def draw(self):

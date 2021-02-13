@@ -33,7 +33,7 @@ class CharacterSpawner:
                     character_count += 1
 
             if character_count < constants.CHARACTER_SPAWNER_MAX_CHARACTERS:
-                print("SPAWNING NEW AI")
+                # print("SPAWNING NEW AI")
                 controller = app.ai_controllers.pop()
                 app.objects.append(
                     Character(Helpers.get_random_pos(), "AI {}".format(controller.index), controller))

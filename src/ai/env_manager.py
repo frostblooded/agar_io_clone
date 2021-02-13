@@ -97,8 +97,6 @@ class EnvManager():
                 state_array.append(state[i][j].playerCount)
                 state_array.append(state[i][j].maxCharacterMass)
                 state_array.append(state[i][j].totalCharacterMass)
-        print(state_array)
-        print(len(state_array))
         return torch.tensor([state_array], device=self.device, dtype=torch.float32)
 
     def get_action_direction(self, action):

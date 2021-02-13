@@ -63,7 +63,6 @@ class App:
 
     def debug_prints(self):
         print("Time since last frame: {} milliseconds".format(self.clock.tick(60)))
-        print("Blobs: {}".format(self.blob_count))
 
     def run(self):
         self.running = True
@@ -71,7 +70,7 @@ class App:
         self.episode_start_time = pygame.time.get_ticks()
 
         while self.running:
-            self.debug_prints()
+            # self.debug_prints()
             self.update()
             self.draw()
 
