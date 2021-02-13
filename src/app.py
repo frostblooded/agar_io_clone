@@ -15,11 +15,13 @@ from src.ai.env_manager import EnvManager
 
 
 class App:
-    def init(self):
+    def init(self, ai_controllers=[]):
         self.objects = []
-        self.ai_controllers = []
+        self.ai_controllers = ai_controllers
 
-        for i in range(constants.CHARACTER_SPAWNER_MAX_CHARACTERS):
+        ai_controllers_to_create = constants.CHARACTER_SPAWNER_MAX_CHARACTERS - \
+            len(self.ai_controllers)
+        for _ in range(ai_controllers_to_create):
             self.ai_controllers.append(AIController())
 
         self.character_spawner = CharacterSpawner()
@@ -50,6 +52,7 @@ class App:
 
     def run(self):
         self.running = True
+        self.episode_start_time = pygame.time.get_ticks()
 
         while self.running:
             self.debug_prints()
@@ -64,7 +67,7 @@ class App:
                 alive_objects.append(obj)
 
         return alive_objects
-    
+
     def get_random_ai_character(self):
         import random
 
@@ -73,14 +76,21 @@ class App:
         for obj in self.objects:
             if type(obj) is Character and not obj.player_controlled:
                 ai_characters.append(obj)
-        
-        return random.choice(ai_characters)
 
+        return random.choice(ai_characters)
 
     def update(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
+                return
+
+        if pygame.time.get_ticks() - self.episode_start_time > 60000:
+            for obj in self.objects:
+                if type(obj) is Character and not obj.player_controlled:
+                    obj.controller.on_end_episode(self, obj)
+            self.running = False
+            return
 
         current_state = self.em.get_state(self)
 
@@ -100,8 +110,9 @@ class App:
 
         self.objects = self.get_alive_objects()
 
-
     def draw(self):
+        if not self.running:
+            return
         self.screen.fill(constants.SCREEN_BACKGROUND_COLOR)
         Painter.draw_background(self.screen, self.background_image)
         Painter.draw_boundaries(self.screen)
