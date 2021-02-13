@@ -101,11 +101,10 @@ class App:
                 self.running = False
                 return
 
-        if pygame.time.get_ticks() - self.episode_start_time > 60000:
+        if pygame.time.get_ticks() - self.episode_start_time > constants.APP_SECONDS_BEFORE_END * 1000:
             for obj in self.objects:
-                if type(obj) is Character and not obj.player_controlled:
-                    obj.controller.on_end_episode()
-                    self.ai_controllers.append(obj.controller)
+                obj.die(self)
+
             self.running = False
             return
 

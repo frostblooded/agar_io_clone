@@ -14,8 +14,9 @@ class CharacterSpawner:
     def spawn_starting_ai(self, app):
         # - 1 because we spawn the player character separately
         for _ in range(0, constants.CHARACTER_SPAWNER_MAX_CHARACTERS):
+            controller = app.ai_controllers.pop()
             app.objects.append(
-                Character(Helpers.get_random_pos(), "AI {}".format(self.ai_spawned), app.ai_controllers.pop()))
+                Character(Helpers.get_random_pos(), "AI {}".format(controller.index), controller))
             self.ai_spawned += 1
 
     def spawn_starting_player(self, app):
