@@ -3,6 +3,7 @@ from pygame.math import Vector2
 import torch
 import torch.optim as optim
 import torch.nn.functional as F
+import os.path
 
 from src import constants
 from src.blob import Blob
@@ -42,7 +43,7 @@ class AIController:
             config.div_rows, config.div_cols).to(self.device)
         if self.app.should_load_models:
             self.policy_net.load_state_dict(
-                torch.load(f'{self.app.load_models_path}\\{self.index}'))
+                torch.load(os.path.join(self.app.load_models_path, str(self.index))))
 
         if self.app.is_training_mode:
             self.policy_net.eval()
@@ -70,7 +71,7 @@ class AIController:
 
         if self.app.should_save_models and self.episode_index % model_save_period == 0:
             torch.save(self.policy_net.state_dict(),
-                       f'{self.app.save_models_path}\\{self.index}')
+                       os.path.join(self.app.save_models_path, str(self.index)))
 
     def update(self):
         # start_time = pygame.time.get_ticks()
