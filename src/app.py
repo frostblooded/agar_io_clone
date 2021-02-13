@@ -15,6 +15,9 @@ from src.ai.env_manager import EnvManager
 
 
 class App:
+    def __init__(self, is_training_mode):
+        self.is_training_mode = is_training_mode
+
     def init(self, ai_controllers=[]):
         self.objects = []
         self.ai_controllers = ai_controllers
@@ -22,7 +25,8 @@ class App:
         ai_controllers_to_create = constants.CHARACTER_SPAWNER_MAX_CHARACTERS - \
             len(self.ai_controllers)
         for _ in range(ai_controllers_to_create):
-            self.ai_controllers.append(AIController(None))
+            self.ai_controllers.append(
+                AIController(None, self.is_training_mode))
 
         self.character_spawner = CharacterSpawner()
         self.character_spawner.spawn_starting_ai(self)
