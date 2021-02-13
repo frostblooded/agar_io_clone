@@ -22,15 +22,14 @@ from src.ai.config import target_update_period
 
 
 class AIController:
-    def __init__(self, character, is_training_mode):
-        print("CREATING AI CONTROLLER")
-        self.is_training_mode = is_training_mode
+    def __init__(self, character, app):
+        self.app = app
         self.device = torch.device(
             "cuda" if torch.cuda.is_available() else "cpu")
         self.character = character
         self.em = EnvManager(self.device)
 
-        if self.is_training_mode:
+        if self.app.is_training_mode:
             self.strategy = EpsilonGreedyStrategy(
                 config.eps_start, config.eps_end, config.eps_decay)
         else:
@@ -41,7 +40,7 @@ class AIController:
         self.policy_net = DQN(
             config.div_rows, config.div_cols).to(self.device)
 
-        if self.is_training_mode:
+        if self.app.is_training_mode:
             self.memory = ReplayMemory(config.memory_size)
             self.target_net = DQN(
                 config.div_rows, config.div_cols).to(self.device)
@@ -54,8 +53,8 @@ class AIController:
             self.is_first_step = True
             self.episode_index = 0
 
-    def on_end_episode(self, app):
-        if not self.is_training_mode:
+    def on_end_episode(self):
+        if not self.app.is_training_mode:
             return
 
         self.episode_index += 1
@@ -64,17 +63,17 @@ class AIController:
         if self.episode_index % target_update_period == 0:
             self.target_net.load_state_dict(self.policy_net.state_dict())
 
-    def update(self, app):
-        start_time = pygame.time.get_ticks()
-        current_state = self.em.get_state(app, self)
-        print("get_state(...) took {} milliseconds".format(
-            pygame.time.get_ticks() - start_time))
+    def update(self):
+        # start_time = pygame.time.get_ticks()
+        current_state = self.em.get_state(self.app, self)
+        # print("get_state(...) took {} milliseconds".format(
+        # pygame.time.get_ticks() - start_time))
 
         action = self.agent.select_action(current_state, self.policy_net)
         direction = self.em.get_action_direction(action)
         self.character.position += direction * self.character.get_speed()
 
-        if not self.is_training_mode:
+        if not self.app.is_training_mode:
             return
 
         # training
@@ -103,6 +102,7 @@ class AIController:
             loss.backward()
             self.optimizer.step()
 
-    def draw(self, app):
-        if Camera.followed_character == self.character:
-            Painter.debug_draw_screen_cells(app, self)
+    def draw(self):
+        if self.app.debug_mode:
+            if Camera.followed_character == self.character:
+                Painter.debug_draw_screen_cells(self.app, self)
