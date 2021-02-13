@@ -62,7 +62,7 @@ class EnvManager():
     def just_starting(self):
         return self.current_screen is None
 
-    def object_is_in_cell(self, obj, cell_i, cell_j, controller):
+    def object_is_in_cell(self, obj, cell_i, cell_j):
         pos = Helpers.world_space_to_screen_space(obj.position)
         radius = obj.size * Camera.zoom
         rect_x = self.cell_width * cell_j
@@ -81,7 +81,7 @@ class EnvManager():
 
             for i in range(div_rows):
                 for j in range(div_cols):
-                    if self.object_is_in_cell(obj, i, j, controller):
+                    if self.object_is_in_cell(obj, i, j):
                         if type(obj) is Blob:
                             state[i][j].blobCount += 1
                         elif type(obj) is Character:
@@ -90,9 +90,16 @@ class EnvManager():
                             state[i][j].maxCharacterMass = max(
                                 state[i][j].maxCharacterMass, obj.size)
 
-        stateArray = [state[i][j].toArray() for j in range(div_cols)
-                      for i in range(div_rows)]
-        return torch.tensor([stateArray], device=self.device, dtype=torch.float32)
+        state_array = [controller.character.size]
+        for i in range(div_rows):
+            for j in range(div_cols):
+                state_array.append(state[i][j].blobCount)
+                state_array.append(state[i][j].playerCount)
+                state_array.append(state[i][j].maxCharacterMass)
+                state_array.append(state[i][j].totalCharacterMass)
+        print(state_array)
+        print(len(state_array))
+        return torch.tensor([state_array], device=self.device, dtype=torch.float32)
 
     def get_action_direction(self, action):
         actionIndex = action.item()

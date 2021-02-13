@@ -9,7 +9,8 @@ class DQN(nn.Module):
     def __init__(self, div_rows, div_cols):
         super().__init__()
 
-        self.fc1 = nn.Linear(in_features=div_rows*div_cols*4, out_features=24)
+        self.fc1 = nn.Linear(in_features=div_rows *
+                             div_cols*4 + 1, out_features=24)
         self.fc2 = nn.Linear(in_features=24, out_features=32)
         self.out = nn.Linear(in_features=32, out_features=num_actions)
 

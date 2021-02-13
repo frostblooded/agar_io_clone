@@ -89,12 +89,12 @@ class Painter:
 
         for i in range(rows_count):
             for j in range(cols_count):
-                curState = state[0][i * rows_count + j]
+                start_index = 1 + (i * cols_count + j) * 4
                 text = "[{}, {}, {}, {}]".format(
-                    int(curState[0]), int(curState[1]), int(curState[2]), int(curState[3]))
+                    int(state[0][start_index]), int(state[0][start_index + 1]), int(state[0][start_index + 2]), int(state[0][start_index + 3]))
                 text_surface = app.debug_font.render(text, False, (0, 0, 0))
                 app.screen.blit(
-                    text_surface, (i * cell_width + 10, j * cell_height + 10))
+                    text_surface, (j * cell_width + 10, i * cell_height + 10))
 
                 pygame.draw.line(screen, color,
                                  Vector2(j * cell_width, i * cell_height),
